@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './PetCard.css';
 
 interface Pet {
@@ -17,7 +18,7 @@ const PetCard: React.FC<{ pet: Pet }> = ({ pet }) => {
       <div className="pet-card-image">
         <img src={pet.image} alt={pet.name} />
         <div className="buttons">
-          <button className="detail-button">Xem chi tiết</button>
+          <Link to="/detail" className="detail-button">Xem chi tiết</Link>
           <button className="book-button">Đặt lịch ngay</button>
         </div>
       </div>

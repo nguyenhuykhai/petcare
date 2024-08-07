@@ -4,6 +4,7 @@ import Home from "./components/home/Home";
 import Header from "./components/common/header/Header";
 import Banner from "./components/common/banner/Banner";
 import Footer from "./components/common/footer/Footer";
+import DetailPage from "./components/detail/DetailPage"; // Import the DetailPage component
 
 const App: React.FC = () => (
   <Router>
@@ -11,6 +12,7 @@ const App: React.FC = () => (
     <Banner />
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/detail" element={<DetailPage />} />
     </Routes>
     <Footer />
   </Router>

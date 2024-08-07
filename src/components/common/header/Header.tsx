@@ -1,5 +1,6 @@
 import React from 'react';
 import './Header.css';
+import { Link } from 'react-router-dom';
 import logoImage from '../../../assets/images/home/logo.png';
 
 const Header: React.FC = () => (
@@ -9,7 +10,7 @@ const Header: React.FC = () => (
     </div>
     <nav>
       <ul>
-        <li><a href="#home">Trang chủ</a></li>
+        <li><Link to="/">Trang chủ</Link></li>
         <li><a href="#about">Giới thiệu</a></li>
         <li><a href="#products">Sản phẩm</a></li>
         <li><a href="#services">Dịch vụ</a></li>
