@@ -1,11 +1,13 @@
 import React from "react";
-import { Container, Section, Title, CardGrid } from "./Home.styles";
-import PetCard from "./component/PetCard";
+import './Home.css';  // Import tệp CSS mới
+import PetCard from "./component/card/PetCard";
+import FeaturedTitle from "./component/highlight/FeaturedTitle";
+import PetImageGallery from "./component/gallery/PetImageGallery";
 
 const pets = [
   {
     type: "Chó",
-    name: "Tắm cho chó",
+    name: "Tắm cho cún",
     image: "https://static.chotot.com/storage/chotot-kinhnghiem/c2c/2023/01/4b70035a-cach-tam-cho-cho-3.jpg",
     price: "100,000 VND",
     duration: "30 phút",
@@ -14,7 +16,16 @@ const pets = [
   },
   {
     type: "Chó",
-    name: "Cắt tỉa lông cho chó",
+    name: "Trông giữ cún",
+    image: "https://laputafarm.com/wp-content/uploads/2022/08/2058b6570507c0599916.jpg",
+    price: "500,000 VND",
+    duration: "Tùy chọn",
+    rate: "4.5",
+    availability: "Còn chỗ"
+  },
+  {
+    type: "Chó",
+    name: "Cắt tỉa lông cho cún",
     image: "https://th.bing.com/th/id/OIP.niBP202iUFEcJTpPtagp2QHaF2?rs=1&pid=ImgDetMain",
     price: "150,000 VND",
     duration: "45 phút",
@@ -23,7 +34,7 @@ const pets = [
   },
   {
     type: "Chó",
-    name: "Chăm sóc móng cho chó",
+    name: "Chăm sóc móng cho cún",
     image: "https://static.chotot.com/storage/chotot-kinhnghiem/c2c/2021/05/66f0d6ec-image.jpeg",
     price: "80,000 VND",
     duration: "20 phút",
@@ -32,7 +43,7 @@ const pets = [
   },
   {
     type: "Chó",
-    name: "Tắm trị liệu cho chó",
+    name: "Tắm trị liệu cho cún",
     image: "https://th.bing.com/th/id/R.a9da928d4d3adc606d35dd66a29b5f22?rik=cejxSoWjAW07BA&pid=ImgRaw&r=0",
     price: "200,000 VND",
     duration: "40 phút",
@@ -41,7 +52,7 @@ const pets = [
   },
   {
     type: "Chó",
-    name: "Chăm sóc răng miệng cho chó",
+    name: "Chăm sóc răng miệng cho cún",
     image: "https://animalmedicalnc.com/wp-content/uploads/2017/01/amnc-brushing-dog-teeth-6.jpg",
     price: "120,000 VND",
     duration: "25 phút",
@@ -92,33 +103,44 @@ const pets = [
     duration: "20 phút",
     rate: "4.6",
     availability: "Còn chỗ"
-  }
+  },
+  {
+    type: "Mèo",
+    name: "Trông giữ mèo",
+    image: "https://anhsang.edu.vn/wp-content/uploads/z3143863267331_4e87ac3a22f424f1a8bb4f329f8a7960_1.jpg",
+    price: "500,000 VND",
+    duration: "Tùy chọn",
+    rate: "4.5",
+    availability: "Còn chỗ"
+  },
 ];
 
 const Home: React.FC = () => (
-  <Container>
-    <Title>Your Boss Our Care</Title>
-    <Section>
-      <h2>Chó</h2>
-      <CardGrid>
+  <div className="container">
+    <FeaturedTitle title={'BOSS DỊCH VỤ'} subtitle={'Các loại dịch vụ chăm sóc cho thú cưng của bạn'} />
+    <section className="section">
+      <h2 className="title">Dịch vụ cho cún</h2>
+      <div className="card-grid">
         {pets
           .filter((pet) => pet.type === "Chó")
           .map((pet) => (
             <PetCard key={pet.name} pet={pet} />
           ))}
-      </CardGrid>
-    </Section>
-    <Section>
-      <h2>Mèo</h2>
-      <CardGrid>
+      </div>
+    </section>
+    <section className="section">
+      <h2 className="title">Dịch vụ cho mèo</h2>
+      <div className="card-grid">
         {pets
           .filter((pet) => pet.type === "Mèo")
           .map((pet) => (
             <PetCard key={pet.name} pet={pet} />
           ))}
-      </CardGrid>
-    </Section>
-  </Container>
+      </div>
+    </section>
+    <FeaturedTitle title={'KHOẢNH KHẮC THÚ CƯNG'} subtitle={'PET LIKE US AND SO WILL YOU'} />
+    <PetImageGallery />
+  </div>
 );
 
 export default Home;

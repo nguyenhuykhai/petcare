@@ -24,8 +24,10 @@ const PetCard: React.FC<{ pet: Pet }> = ({ pet }) => {
       <div className="pet-card-content">
         <h3>{pet.name}</h3>
         <p className="price">{pet.price}</p>
-        <p className={`availability ${pet.availability === "Còn chỗ" ? "in-stock" : "out-of-stock"}`}>{pet.availability}</p>
       </div>
+      <button className="availability-btn">
+          <p className={`availability ${pet.availability === "Còn chỗ" ? "in-stock" : "out-of-stock"}`}>{pet.availability}</p>
+        </button>
     </div>
   );
 };

@@ -8,7 +8,6 @@
   width: 220px;
   background-color: #fff;
   transition: transform 0.3s, box-shadow 0.3s;
-  margin: 20px;
   position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -68,13 +67,17 @@
 }
 
 .pet-card-content {
-  padding: 20px 10px;
+  padding: 0 10px;
+  padding-bottom: 40px;
 }
 
 .pet-card-content h3 {
-  font-size: 18px;
-  margin: 10px 0;
-  color: #333;
+  color: #272727;
+  line-height: 20px;
+  font-size: 16px;
+  text-align: center;
+  font-weight: 600;
+  height: 40px;
 }
 
 .pet-card-content .pet-name {
@@ -90,17 +93,28 @@
   margin-bottom: 10px;
 }
 
+.availability-btn {
+  position: absolute;
+  bottom: 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s, transform 0.3s;
+  font-size: 5px;
+  background-color: red;
+}
+
 .availability {
-  margin-top: 10px;
-  font-size: 14px;
+  margin: 5px;
+  font-size: 12px;
 }
 
 .in-stock {
-  color: green;
+  color: white;
   font-weight: bold;
 }
 
 .out-of-stock {
-  color: red;
+  color: white;
   font-weight: bold;
 }
