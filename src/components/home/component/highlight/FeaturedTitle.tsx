@@ -4,7 +4,7 @@ import decorateImage from '../../../../assets/images/home/tieude_giua.png';
 
 type FeaturedTitleProps = {
   title: string;
-  subtitle: string;
+  subtitle?: string;
 };
 
 const FeaturedTitle: React.FC<FeaturedTitleProps> = ({title, subtitle}) => (

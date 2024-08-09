@@ -14,8 +14,8 @@ const MainContent: React.FC = () => (
         <p><b>Tình trạng:</b> Còn chỗ</p>
         <p><b>Lượt đánh giá:</b> 1880</p>
         <p><b>Giá bán:</b> <span className="price">150.000 VNĐ</span></p>
-        <button className="btn btn-add-cart">Thêm vào giỏ hàng</button>
-        <button className="btn btn-buy-now">Mua ngay</button>
+        <button className="btn btn-add-cart"><span>Thêm vào giỏ hàng</span></button>
+        <button className="btn btn-buy-now"><span>Mua ngay</span></button>
       </div>
     </div>
   </div>
