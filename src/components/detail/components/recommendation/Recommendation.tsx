@@ -1,12 +1,13 @@
 import React from "react";
 import "./Recommendation.css";
 import FeaturedTitle from "../../../home/component/highlight/FeaturedTitle";
+import Recomment from "./components/recomment/recomment";
 
 const Recommendation: React.FC = () => (
   <div className="recommendation">
     <FeaturedTitle title={'CÁC DỊCH VỤ KHÁC'}/>
     <div className="recommendation-items">
-      {/* Add recommended items here */}
+      <Recomment />
     </div>
   </div>
 );

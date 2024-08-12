@@ -32,7 +32,7 @@ const Footer: React.FC = () => (
         <img src={clockImage} alt="Opening Hours" />
         <p>Từ thứ 2 đến chủ nhật (8:am - 10:00pm)</p>
       </div>
-      <p className="footer-bottom-text">© 2023 Pet Care. All rights reserved.</p>
+      <p className="footer-bottom-text">© 2024 Pet Care. All rights reserved.</p>
     </div>
   </div>
 );

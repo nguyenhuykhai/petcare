@@ -4,6 +4,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 90%;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
@@ -19,6 +25,8 @@ nav ul {
   list-style: none;
   display: flex;
   gap: 20px;
+  margin: 0;
+  padding: 0;
 }
 
 nav li {
@@ -29,4 +37,16 @@ nav a {
   text-decoration: none;
   color: white;
   font-weight: bold;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #e89305;
+  /* Updated to match your primary color */
+}
+
+/* Add padding to the top of the body to prevent content from being hidden behind the fixed header */
+body {
+  padding-top: 120px;
+  /* Adjust this value if your header height changes */
 }

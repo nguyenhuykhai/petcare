@@ -19,7 +19,7 @@ const PetCard: React.FC<{ pet: Pet }> = ({ pet }) => {
         <img src={pet.image} alt={pet.name} />
         <div className="buttons">
           <Link to="/detail" className="detail-button">Xem chi tiết</Link>
-          <button className="book-button">Đặt lịch ngay</button>
+          <Link to="/booking" className="book-button">Đặt lịch ngay</Link>
         </div>
       </div>
       <div className="pet-card-content">
