@@ -16,17 +16,16 @@ const Footer: React.FC = () => (
       <div className="footer-item">
         <img src={addressImage} alt="Address" />
         <p>
-          Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí
-          Minh 700000, Vietnam
+          14.14 Đường số 6, KĐT Hà Quang 2, P. Phước Hải, TP. Nha Trang
         </p>
       </div>
       <div className="footer-item">
         <img src={phoneImage} alt="Hotline" />
-        <p>9999 9999</p>
+        <p>0258 381 2078 hoặc 0258 381 2077</p>
       </div>
       <div className="footer-item">
         <img src={emailImage} alt="Email" />
-        <p>chamsockhachhang@petcare.gmail.com</p>
+        <p>Master_FE_HaThanhDat@gmail.com</p>
       </div>
       <div className="footer-item">
         <img src={clockImage} alt="Opening Hours" />
