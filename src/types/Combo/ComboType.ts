@@ -6,6 +6,7 @@ export type ComboType = {
   description: string;
   status: string;
   priority: string | null;
+  image: string[];
   category: {
     id: string;
     name: string;
@@ -15,6 +16,7 @@ export type ComboType = {
     name: string;
     stockPrice: number;
     sellingPrice: number;
+    image: string[];
   }[];
 };
 

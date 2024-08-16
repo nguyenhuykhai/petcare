@@ -1,8 +1,5 @@
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import Logout from "@mui/icons-material/Logout";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Avatar,
   Box,
@@ -15,30 +12,39 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import logoImage from "../../../assets/images/home/logo.png";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import Logout from "@mui/icons-material/Logout";
+import PersonAdd from "@mui/icons-material/PersonAdd";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import { UserContext } from "../../../context/AuthContext";
 import { ROLES } from "../../../routes/roles";
+import logoImage from "../../../assets/images/home/logo.png";
 import "./Header.css";
 
 const Header: React.FC = () => {
   const currentUser = useContext(UserContext);
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
+
+  const [serviceMenuAnchor, setServiceMenuAnchor] = useState<null | HTMLElement>(null);
+  const openServiceMenu = Boolean(serviceMenuAnchor);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const handleLogout = () => {
     currentUser.setUser(null);
     localStorage.removeItem("userData");
     navigate("/");
   };
+
   const renderRole = () => {
     switch (currentUser.user?.role?.toUpperCase()) {
       case ROLES.ADMIN:
@@ -77,8 +83,17 @@ const Header: React.FC = () => {
           <li>
             <Link to={"/"}>Giới thiệu</Link>
           </li>
-          <li>
-            <Link to={"/"}>Dịch vụ</Link>
+          <li
+            onMouseEnter={(e) => setServiceMenuAnchor(e.currentTarget)}
+            onMouseLeave={() => setServiceMenuAnchor(null)}
+          >
+            <Link to={"/"} className="dropdown-link">Dịch vụ</Link>
+            {openServiceMenu && (
+              <ul className="dropdown-menu">
+                <li><Link to={"/spa-services"}>Dịch vụ spa</Link></li>
+                <li><Link to={"/"}>Dịch vụ đơn lẻ</Link></li>
+              </ul>
+            )}
           </li>
           <li>
             <Link to={"/booking"}>Đặt lịch</Link>
@@ -94,14 +109,11 @@ const Header: React.FC = () => {
                     onClick={handleClick}
                     size="small"
                     sx={{ ml: 2 }}
-                    aria-controls={open ? "account-menu" : undefined}
+                    aria-controls={openMenu ? "account-menu" : undefined}
                     aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
+                    aria-expanded={openMenu ? "true" : undefined}
                   >
-                    <Avatar
-                      sx={{ width: 32, height: 32 }}
-                      src={"/logo.png"}
-                    ></Avatar>
+                    <Avatar sx={{ width: 32, height: 32 }} src={"/logo.png"}></Avatar>
                   </IconButton>
                 </Tooltip>
               </Box>
@@ -140,12 +152,7 @@ const Header: React.FC = () => {
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
-                <Stack
-                  direction={"row"}
-                  alignItems={"cenetr"}
-                  spacing={1}
-                  sx={{ p: 1 }}
-                >
+                <Stack direction={"row"} alignItems={"cenetr"} spacing={1} sx={{ p: 1 }}>
                   <img
                     src={"/logo.png"}
                     alt="Avatar"
