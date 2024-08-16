@@ -9,14 +9,33 @@ import Typography from "@mui/material/Typography";
 import { Chip, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
+// {
+//   "id": "85b20a7b-f819-4edf-928d-e755b6262278",
+//   "name": "Sản phẩm 5",
+//   "stockPrice": 1000000,
+//   "sellingPrice": 1000000,
+//   "description": "Sản phẩm 5",
+//   "status": "Available",
+//   "priority": null,
+//   "category": {
+//       "id": "7be29a8f-bf36-4e87-92db-82f465400272",
+//       "name": "Mèo"
+//   },
+//   "image": []
+// },
 interface Pet {
-  type: string;
+  id: string;
   name: string;
-  image: string;
-  price: string;
-  duration: string;
-  rate: string;
-  availability: string;
+  stockPrice: number;
+  sellingPrice: number;
+  description?: string;
+  status: string;
+  priority?: string;
+  category: {
+    id: string;
+    name: string;
+  };
+  image: string[];
 }
 
 const PetCard: React.FC<{ pet: Pet }> = ({ pet }) => {
@@ -25,7 +44,7 @@ const PetCard: React.FC<{ pet: Pet }> = ({ pet }) => {
       <Card sx={{ maxWidth: 400, textAlign: "center" }}>
         <CardMedia
           sx={{ height: 200, objectFit: "cover" }}
-          image={pet.image}
+          image={pet.image[0]}
           title={pet.name}
         />
         <CardContent sx={{ textAlign: "center" }}>
@@ -54,15 +73,15 @@ const PetCard: React.FC<{ pet: Pet }> = ({ pet }) => {
               color: "#e67e22",
             }}
           >
-            {pet.price}
+            {pet.sellingPrice} VNĐ
           </Typography>
           <Chip
-            label={pet.availability}
-            color={pet.availability === "Còn chỗ" ? "success" : "error"}
+            label={pet.status === "Available" ? "Còn chỗ" : "Hết chỗ"}
+            color={pet.status === "Available" ? "success" : "error"}
           />
         </CardContent>
         <CardActions sx={{ mb: 2 }}>
-          <Link to="/detail" className="detail-button">
+          <Link to={`/${pet.id}`} className="detail-button">
             <Button
               size="small"
               sx={{

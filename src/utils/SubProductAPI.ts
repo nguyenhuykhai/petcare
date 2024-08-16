@@ -1,4 +1,5 @@
 
+import { get } from "http";
 import { ProductResponse } from "../types/Product/ProductType";
 import axiosClient from "./axiosClient";
 const SubProductAPI = {
@@ -10,6 +11,10 @@ const SubProductAPI = {
         indexes: null, // by default: false
       },
     });
+  },
+  getOne: (id: string) => {
+    const url = `/supProducts/${id}`;
+    return axiosClient.get(url);
   },
   create: (payload: any) => {
     const url = "/supProducts";
