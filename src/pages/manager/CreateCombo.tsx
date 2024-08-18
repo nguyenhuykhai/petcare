@@ -4,6 +4,7 @@ import {
   FormControl,
   FormHelperText,
   Grid,
+  IconButton,
   MenuItem,
   Paper,
   Select,
@@ -11,8 +12,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import Button from "@mui/material/Button";
-import { Field, Form, Formik } from "formik";
+import { Field, FieldArray, Form, Formik, FormikProps, FormikValues } from "formik";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -33,17 +36,22 @@ const validationSchema = Yup.object({
     .min(1000, "Giá bán không thể nhỏ hơn 1000 VNĐ!"),
   status: Yup.string().required("*Trạng thái không được để trống !"),
   categoryId: Yup.string().required("*Loại sản phẩm không được để trống !"),
+  image: Yup.array().of(
+    Yup.string().required("Hình ảnh không được để trống!")
+  ),
 });
 
 export default function CreateCombo() {
   const navigate = useNavigate();
+  const formikRef = React.useRef<FormikProps<FormikValues>>(null);
   const [listCategory, setListCategory] = React.useState<CategoryType[] | []>(
     []
   );
   const [listProductSelected, setListProductSelected] = React.useState<
     string[] | []
   >([]);
-  const [totalSellingPriceOfSubProuducts, setTotalSellingPriceOfSubProuducts] = React.useState(0)
+  const [totalSellingPriceOfSubProuducts, setTotalSellingPriceOfSubProuducts] =
+    React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
   console.log("check product", listProductSelected);
   React.useEffect(() => {
@@ -64,27 +72,39 @@ export default function CreateCombo() {
 
   return (
     <Paper sx={{ p: 10 }}>
-       {isLoading && <LoadingComponentVersion2 open={isLoading}/>}
+      {isLoading && <LoadingComponentVersion2 open={isLoading} />}
       <Formik
         initialValues={{
           name: "",
           description: "",
           stockPrice: "",
           sellingPrice: "",
-          status: "",
+
+          status: "AVAILABLE",
+
           categoryId: "",
+          image:[""]
         }}
+        innerRef={formikRef}
         validationSchema={validationSchema}
         onSubmit={async (values) => {
-          try {       
+          if (listProductSelected.length === 0) {
+            toast.error("Vui lòng chọn sản phẩm cho gói!");
+            return;
+          }
+          try {
             const response = await ProductAPI.create({
               ...values,
               priority: 0,
-              supProductId: listProductSelected
+              supProductId: listProductSelected,
+              image: values.image.map((img: any)=>{return({
+                imageURL: img
+              })
+            })
             });
             console.log({ response });
             toast.success("Tạo thành công !");
-            navigate("/manager-manage-combo")
+            navigate("/manager-manage-combo");
           } catch (error) {
             toast.error("Tạo thất bại !");
           }
@@ -228,9 +248,7 @@ export default function CreateCombo() {
                       <MenuItem value={item.id}>{item.name}</MenuItem>
                     ))}
                   </Field>
-                  <FormHelperText>
-                    {touched.categoryId && errors.categoryId}
-                  </FormHelperText>
+                  <FormHelperText>*Vui lòng chọn loại sản phẩm</FormHelperText>
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={6}>
@@ -249,31 +267,108 @@ export default function CreateCombo() {
                     onBlur={handleBlur}
                     value={values.status}
                   >
-                    <MenuItem value="Available">Sẵn có</MenuItem>
-                    <MenuItem value="UnAvailable">Không sẵn có</MenuItem>
-                    <MenuItem value="OutOfStock">Hết hàng</MenuItem>
+
+                    <MenuItem value="AVAILABLE">Sẵn có</MenuItem>
+                    <MenuItem value="UNAVAILABLE">Không sẵn có</MenuItem>
+                    <MenuItem value="OUTOFSTOCK">Hết hàng</MenuItem>
+
                   </Field>
                   <FormHelperText>
-                    {touched.status && errors.status}
+                    * Vui lòng chọn trạng thái gói
                   </FormHelperText>
                 </FormControl>
               </Grid>
             </Grid>
+            <Box mb={2}></Box>
+            <Typography variant="subtitle2" sx={{ color: "black", mb: 1 }}>Nhập link ảnh:</Typography>
+            <FieldArray name="image">
+                    {({ push, remove }: any) => (
+                      <Box>
+                        {values.image.map(
+                          (subService: any, index: any) => (
+                            <Stack
+                              direction={"row"}
+                              alignItems={"center"}                            
+                              spacing={1}
+                              sx={{mb:3}}
+                            >
+                              <Field name={`image.${index}`}>
+                                {({ field, meta }: any) => (
+                                  <Box sx={{width:"100%"}}>                              
+                                    <TextField
+                                      {...field}
+                                      label={`Ảnh ${index + 1}`}
+                                      type="text"
+                                      size="small"
+                                      placeholder="Nhập url ảnh..."
+                                      fullWidth
+                                      autoComplete="off"
+                                      // sx={{ minWidth: 500 }}
+                                      error={meta.touched && !!meta.error}
+                                      helperText={
+                                        meta.touched && meta.error
+                                          ? meta.error
+                                          : ""
+                                      }
+                                    />
+                                  </Box>
+                                )}
+                              </Field>
+                              {/* hiển thị nút delete cho phần tử thứ 2 trở đi */}
+                              {index > 0 && (
+                                <
+                                >
+                                  <IconButton
+                                    aria-label="delete"
+                                    size="small"
+                                    onClick={() => remove(index)}
+                                  >
+                                    <DeleteIcon
+                                      fontSize="inherit"
+                                      color="error"
+                                    />
+                                  </IconButton>
+                                </>
+                                //   <Button onClick={()=>remove(index)}> delete {index + 1}</Button>
+                              )}
+                            </Stack>
+                          )
+                        )}
 
-            <Box sx={{ mt: 5, mb: 3 }}>
-              <TableSelectProduct
-              listProductSelected={listProductSelected}
-                setListProductSelected={setListProductSelected}
-                setTotalSellingPriceOfSubProuducts={setTotalSellingPriceOfSubProuducts}
-              />
-            </Box>
-            {typeof(values.sellingPrice) === "number" && totalSellingPriceOfSubProuducts <
-                values.sellingPrice && (
+                        <Box>
+                          <Button
+                            startIcon={<AddOutlinedIcon />}
+                            variant="outlined"
+                            size="small"
+                            onClick={() => push("")}     
+                            color="info"
+                          >
+                            Thêm
+                          </Button>
+                        </Box>
+                      </Box>
+                    )}
+                  </FieldArray>
+            {values.categoryId && (
+              <Box sx={{ mt: 5, mb: 3 }}>
+                <TableSelectProduct
+                  listProductSelected={listProductSelected}
+                  formikRef={formikRef}
+                  setListProductSelected={setListProductSelected}
+                  setTotalSellingPriceOfSubProuducts={
+                    setTotalSellingPriceOfSubProuducts
+                  }
+                />
+              </Box>
+            )}
+            {(typeof values.sellingPrice === "number" && listProductSelected.length > 0) &&
+              totalSellingPriceOfSubProuducts < values.sellingPrice && (
                 <Box>
-                  <Alert variant="filled" severity="warning">
-                    Giá tiền bán ra của gói lớn hơn tổng giá tiền các sản phẩm
-                    mà bạn đã chọn!{" "} ({totalSellingPriceOfSubProuducts.toLocaleString()} VNĐ) 
-                  </Alert>
+                   <Alert severity="warning">
+                      Giá tiền bán ra của gói lớn hơn tổng giá tiền các sản phẩm
+                      mà bạn đã chọn! (
+                      {values.sellingPrice.toLocaleString()} VNĐ {">"} {totalSellingPriceOfSubProuducts.toLocaleString()} VNĐ)
+                    </Alert>
                 </Box>
               )}
             <Stack direction={"row"} sx={{ mt: 4 }} spacing={3}>

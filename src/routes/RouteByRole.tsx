@@ -6,6 +6,7 @@ import TotalStaff from "../pages/admin/ManageMenu/TotalStaff";
 import Login from "../pages/common/Authentication/Login";
 import Register from "../pages/common/Authentication/Register";
 import ContactPage from "../pages/common/Contact";
+import DetailPage from "../pages/common/Detail/DetailPage";
 import Page401 from "../pages/common/ErrorPage/Page401";
 import Page403 from "../pages/common/ErrorPage/Page403";
 import Home from "../pages/common/Home/Home";
@@ -13,11 +14,15 @@ import Profile from "../pages/customer/Profile";
 import CreateCombo from "../pages/manager/CreateCombo";
 import DetailCombo from "../pages/manager/DetailCombo";
 import DetailCustomer from "../pages/manager/DetailCustomer";
+
+import DetailOrder from "../pages/manager/DetailOrder";
+
 import ListCategory from "../pages/manager/ListCategory";
 import ListCombo from "../pages/manager/ListCombo";
 import ListOrder from "../pages/manager/ListOrder";
 import ListProduct from "../pages/manager/ListProduct";
 import ListStaff from "../pages/manager/ListStaff";
+import ListTask from "../pages/manager/ListTask";
 import ListUser from "../pages/manager/ListUser";
 import UpdateCombo from "../pages/manager/UpdateCombo";
 import StaffCalendar from "../pages/staff/StaffCalendar";
@@ -96,6 +101,10 @@ export const managerRoutes = [
     element: <ListStaff />,
   },
   {
+    path: "/manager-manage-task",
+    element: <ListTask />,
+  },
+  {
     path: "/manager-manage-combo",
     element: <ListCombo />,
   },
@@ -123,6 +132,10 @@ export const managerRoutes = [
     path: "/manager-manage-order",
     element: <ListOrder />,
   },
+  {
+    path: "/manager-manage-order/:id",
+    element: <DetailOrder />,
+  },
 ];
 
 export const customerRoutes = [
@@ -130,6 +143,12 @@ export const customerRoutes = [
     path: "/profile",
     element: <Profile />,
   },
+
+  // {
+  //   path: "/booking",
+  //   element: <Booking />,
+  //   isWrapLayout: false,
+  // },
 ];
 
 export const staffRoutes = [
