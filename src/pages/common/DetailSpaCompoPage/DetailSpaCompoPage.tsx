@@ -7,7 +7,6 @@ import {
   CardMedia,
   Grid,
   Typography,
-  CircularProgress,
   Divider,
 } from "@mui/material";
 import ProductAPI from "../../../utils/ProductAPI";
@@ -27,17 +26,12 @@ const DetailSpaCompoPage: React.FC = () => {
     description: "Mô tả combo không có sẵn.",
     status: "Unavailable",
     priority: null,
+    image: [{ imageURL: "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" }],
     category: {
       id: "N/A",
       name: "Chưa xác định",
     },
     supProducts: [],
-    image: [
-      {
-        imageURL:
-          "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
-      },
-    ],
   };
 
   useEffect(() => {
@@ -48,7 +42,6 @@ const DetailSpaCompoPage: React.FC = () => {
           const response = await ProductAPI.getDetail(id);
           const comboData: ComboType = response;
 
-          // Set fallback data if some fields are missing
           const comboWithDefaults = {
             ...defaultProductData,
             ...comboData,
@@ -56,17 +49,14 @@ const DetailSpaCompoPage: React.FC = () => {
               ...defaultProductData.category,
               ...comboData.category,
             },
-            image:
-              comboData.image.length > 0
-                ? comboData?.image[0]?.imageURL
-                : defaultProductData.image[0].imageURL,
+            image: comboData.image.length > 0 ? comboData.image : defaultProductData.image,
           };
 
           setCombo(comboWithDefaults);
         }
       } catch (error) {
         console.error("Failed to fetch combo details", error);
-        setCombo(defaultProductData); // Set default data in case of an error
+        setCombo(defaultProductData);
       } finally {
         setIsLoading(false);
       }
@@ -81,12 +71,7 @@ const DetailSpaCompoPage: React.FC = () => {
 
   if (!combo) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Typography variant="h5">Combo không tìm thấy</Typography>
       </Box>
     );
@@ -101,7 +86,7 @@ const DetailSpaCompoPage: React.FC = () => {
               component="img"
               alt={combo.name}
               height="300"
-              image={combo.image[0]}
+              image={combo.image[0].imageURL}
               title={combo.name}
             />
             <CardContent>
@@ -138,7 +123,7 @@ const DetailSpaCompoPage: React.FC = () => {
                     height="150"
                     image={
                       product.image.length
-                        ? product.image[0]
+                        ? product.image[0].imageURL
                         : "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     }
                     title={product.name}

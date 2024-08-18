@@ -1,8 +1,6 @@
-import AddIcon from "@mui/icons-material/Add";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import {
   Box,
-  Button,
   Chip,
   FormControl,
   InputAdornment,
@@ -13,7 +11,7 @@ import {
   Stack,
   TablePagination,
   TextField,
-  Typography,
+  Typography
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
@@ -24,17 +22,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import * as React from "react";
-import MenuActionCategory from "../../components/manager/MenuAction/MenuActionCategory";
-import ModalCreateCategory from "../../components/manager/Modal/Category/ModalCreateNewCategory";
-import ModalUpdateCategory from "../../components/manager/Modal/Category/ModalUpdateCategory";
 import useDebounce from "../../hook/useDebounce";
-import {
-  CategoryType,
-  FilterCategoryType,
-} from "../../types/Category/CategoryType";
 import { PaginationType } from "../../types/CommonType";
-import CategoryAPI from "../../utils/CategoryAPI";
-import ModalDeleteCategory from "../../components/manager/Modal/Category/ModalDeleteCategory";
+import { FilterUserType, UserType } from "../../types/User/UserType";
+import UserAPI from "../../utils/UserAPI";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -59,12 +50,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function ListCategory() {
+export default function ListTask() {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [showModalCreate, setShowModalCreate] = React.useState(false);
-  const [showModalUpdate, setShowModalUpdate] = React.useState(false);
-  const [showModalDelete, setShowModalDelete] = React.useState(false);
-  const [listCategory, setListCategory] = React.useState<CategoryType[] | []>(
+  const [listUser, setListUser] = React.useState<UserType[] | []>(
     []
   );
   const [pagination, setPagination] = React.useState<PaginationType>({
@@ -74,14 +62,14 @@ export default function ListCategory() {
     totalPages: 1,
   });
   const [searchName, setSearchName] = React.useState("");
-  const [filter, setFilter] = React.useState<FilterCategoryType>({
+  const [searchPhone, setSearchPhone] = React.useState("");
+  const [filter, setFilter] = React.useState<FilterUserType>({
     page: 1,
     size: 10,
-    Status: "",
+    Role: "User",
   });
-  const [selectedCategory, setSelectedCategory] =
-    React.useState<CategoryType | null>(null);
-  const debouncedInputValue = useDebounce(searchName, 1000); // Debounce with 1000ms delay
+  const debouncedInputValueName = useDebounce(searchName, 500); // Debounce with 500ms delay
+  const debouncedInputValuePhone = useDebounce(searchPhone, 500);
   const handleChangePage = (event: unknown, newPage: number) => {
     setFilter((prev) => ({ ...prev, page: newPage }));
   };
@@ -94,12 +82,16 @@ export default function ListCategory() {
   const handleSearchName = (name: string) => {
     setSearchName(name);
   };
-  const fetchAllCategory = React.useCallback(async () => {
+
+  const handleSearchPhone = (phone: string) => {
+    setSearchPhone(phone);
+  };
+  const fetchAllUser = React.useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await CategoryAPI.getAll(filter);
+      const data = await UserAPI.getAll(filter);
       console.log({ data });
-      setListCategory(data.items);
+      setListUser(data.items);
       setPagination({
         page: data.page,
         size: data.size,
@@ -107,24 +99,25 @@ export default function ListCategory() {
         totalPages: data.totalPages,
       });
     } catch (error) {
-      console.log("Error get list Category: ", error);
+      console.log("Error get list User: ", error);
     } finally {
       setIsLoading(false);
     }
   }, [filter]);
   React.useEffect(() => {
-    fetchAllCategory();
-  }, [fetchAllCategory]);
+    fetchAllUser();
+  }, [fetchAllUser]);
+
   React.useEffect(() => {
-    setFilter((prev) => ({ ...prev, Name: debouncedInputValue }));
-  }, [debouncedInputValue]);
+    setFilter((prev) => ({ ...prev, FullName: debouncedInputValueName }));
+  }, [debouncedInputValueName]);
+
+  React.useEffect(() => {
+    setFilter((prev) => ({ ...prev, PhoneNumber: debouncedInputValuePhone }));
+  }, [debouncedInputValuePhone]);
+
   return (
     <Paper sx={{ p: 3 }}>
-      <Stack
-        direction={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
         <Stack
           direction={"row"}
           alignItems={"center"}
@@ -133,11 +126,26 @@ export default function ListCategory() {
         >
           <TextField
             size="small"
-            placeholder="Nhập tên thể loại..."
+            placeholder="Nhập tên khách hàng..."
             label="Tìm kiếm"
             value={searchName}
             onChange={(e) => handleSearchName(e.target.value)}
-            sx={{ width: "345px" }}
+            sx={{ width: "300px" }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchOutlinedIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            size="small"
+            placeholder="Nhập số điện thoại..."
+            label="Tìm kiếm"
+            value={searchPhone}
+            onChange={(e) => handleSearchPhone(e.target.value)}
+            sx={{ width: "300px" }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -147,7 +155,7 @@ export default function ListCategory() {
             }}
           />
           <Box sx={{ minWidth: 120 }}>
-            <FormControl sx={{ width: "345px" }} size="small">
+            <FormControl sx={{ width: "300px" }} size="small">
               <InputLabel id="demo-simple-select-label">Trạng thái</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -162,41 +170,32 @@ export default function ListCategory() {
                 }
               >
                 <MenuItem value={""}>Tất cả</MenuItem>
-
-                <MenuItem value={"ACTIVE"}>Đang hoạt động</MenuItem>
-                <MenuItem value={"INACTIVE"}>Ngưng hoạt động</MenuItem>
-
+                <MenuItem value={"Activate"}>Đang hoạt động</MenuItem>
+                <MenuItem value={"Deactivate"}>Ngưng hoạt động</MenuItem>
               </Select>
             </FormControl>
           </Box>
         </Stack>
-        <Button
-          variant="contained"
-          color="info"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setShowModalCreate(true);
-          }}
-        >
-          Thêm
-        </Button>
-      </Stack>
+
 
       <TableContainer component={Paper} sx={{ minHeight: 600 }}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell align="center">STT</StyledTableCell>
-              <StyledTableCell align="center">Tên</StyledTableCell>
-              <StyledTableCell align="center">Mô tả</StyledTableCell>
-              <StyledTableCell align="center">Trạng thái</StyledTableCell>
-              <StyledTableCell align="center">Thao tác</StyledTableCell>
+              <StyledTableCell align="center">Họ Và Tên</StyledTableCell>
+              <StyledTableCell align="center">Tên Đăng Nhập</StyledTableCell>  
+              <StyledTableCell align="center">Số Điện Thoại</StyledTableCell>  
+              <StyledTableCell align="center">Email</StyledTableCell>  
+              <StyledTableCell align="center">Hạng</StyledTableCell>  
+              <StyledTableCell align="center">Điểm tích lũy</StyledTableCell>  
+              <StyledTableCell align="center">Trạng thái</StyledTableCell>   
             </TableRow>
           </TableHead>
           <TableBody>
-            {listCategory.length === 0 && isLoading === false && (
+            {listUser.length === 0 && isLoading === false && (
               <StyledTableRow>
-                <StyledTableCell colSpan={5} align="left">
+                <StyledTableCell colSpan={8} align="left">
                   <Typography align="center">Không có dữ liệu!</Typography>
                 </StyledTableCell>
               </StyledTableRow>
@@ -219,17 +218,26 @@ export default function ListCategory() {
                   <StyledTableCell align="left">
                     <Skeleton variant="rectangular" />
                   </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Skeleton variant="rectangular" />
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Skeleton variant="rectangular" />
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Skeleton variant="rectangular" />
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
-            {listCategory.length > 0 &&
+            {listUser.length > 0 &&
               isLoading === false &&
-              listCategory.map((row, index) => (
+              listUser.map((row, index) => (
                 <StyledTableRow key={index}>
                   <StyledTableCell align="center" size="small">
                     {(pagination.page - 1) * pagination.size + index + 1}
                   </StyledTableCell>
                   <StyledTableCell align="center" size="small">
-                    {row.name}
+                    {row.fullName}
                   </StyledTableCell>
                   <StyledTableCell
                     align="center"
@@ -241,24 +249,26 @@ export default function ListCategory() {
                       maxWidth: "250px",
                     }}
                   >
-                    {row.description}
+                    {row.username}
                   </StyledTableCell>
                   <StyledTableCell align="center" size="small">
-
-                    {row.status === "ACTIVE" ? (
-                      <Chip label={"Đang hoạt động"} color="success" size="small"/>
+                    {row.phoneNumber}
+                  </StyledTableCell>
+                  <StyledTableCell align="center" size="small">
+                    {row.email ? row.email : "-"}
+                  </StyledTableCell>
+                  <StyledTableCell align="center" size="small">
+                    {row.rank ? row.rank : "-"}
+                  </StyledTableCell>
+                  <StyledTableCell align="center" size="small">
+                    {row.point ? row.point : "-"}
+                  </StyledTableCell>
+                  <StyledTableCell align="center" size="small">
+                    {row.status === "Activate" ? (
+                      <Chip label={"Đang hoạt động"} color="success" />
                     ) : (
-                      <Chip label={"Ngưng hoạt động"} color="error" size="small"/>
-
+                      <Chip label={"Ngưng hoạt động"} color="error" />
                     )}
-                  </StyledTableCell>
-                  <StyledTableCell align="center" size="small">
-                    <MenuActionCategory
-                      setOpenUpdate={setShowModalUpdate}                  
-                      setOpenDelete={setShowModalDelete}
-                      setSelectedCategory={setSelectedCategory}
-                      data={row}
-                    />
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
@@ -278,24 +288,6 @@ export default function ListCategory() {
           return `${from}–${to} / ${count !== -1 ? count : `nhiều hơn ${to}`}`;
         }}
       />
-      <ModalCreateCategory
-        open={showModalCreate}
-        setOpen={setShowModalCreate}
-        fetchAllCategory={fetchAllCategory}
-      />
-
-      {selectedCategory && <ModalUpdateCategory
-        open={showModalUpdate}
-        setOpen={setShowModalUpdate}
-        fetchAllCategory={fetchAllCategory}
-        data={selectedCategory}
-      />}
-      {selectedCategory && <ModalDeleteCategory
-        open={showModalDelete}
-        setOpen={setShowModalDelete}
-        fetchAllCategory={fetchAllCategory}
-        data={selectedCategory}
-      />}
     </Paper>
   );
 }

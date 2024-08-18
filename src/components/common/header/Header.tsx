@@ -99,9 +99,6 @@ const Header: React.FC = () => {
             )}
           </li>
           <li>
-            <Link to={"/booking"}>Đặt lịch</Link>
-          </li>
-          <li>
             <Link to={"/contact"}>Liên hệ</Link>
           </li>
           {currentUser.user ? (

@@ -1,5 +1,4 @@
 
-import { get } from "http";
 import { ProductResponse } from "../types/Product/ProductType";
 import axiosClient from "./axiosClient";
 const SubProductAPI = {
