@@ -10,7 +10,7 @@ export type ProductType = {
     id: string;
     name: string;
   };
-  image: string[];
+  image: any[];
 };
 
 export type FilterProductType = {

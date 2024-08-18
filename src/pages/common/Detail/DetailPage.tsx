@@ -7,6 +7,7 @@ import MainContent from "../../../components/detail/component/content/MainConten
 import Information from "../../../components/detail/component/information/Information";
 import { ProductType } from "../../../types/Product/ProductType";
 import SubProductAPI from "../../../utils/SubProductAPI";
+import LoadingComponentVersion2 from "../../../components/common/loading/Backdrop";
 
 const DetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Extract id from URL parameters
@@ -26,7 +27,9 @@ const DetailPage: React.FC = () => {
       name: "Chưa xác định",
     },
     image: [
-      "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
+      {
+        imageURL: "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+      }
     ],
   };
 
@@ -64,6 +67,7 @@ const DetailPage: React.FC = () => {
 
   return (
     <div className="detail-page">
+      <LoadingComponentVersion2 open={isLoading} />
       <Sidebar />
       <div className="main-content-area">
         {isLoading ? (

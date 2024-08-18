@@ -6,6 +6,7 @@ import ProductAPI from "../../../utils/ProductAPI";
 import { ComboType, ComboResponse } from "../../../types/Combo/ComboType";
 import "./SpaCompoPage.css";
 import PetImageGallery from "../../../components/home/component/gallery/PetImageGallery";
+import LoadingComponentVersion2 from "../../../components/common/loading/Backdrop";
 
 const SpaCompoPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +36,7 @@ const SpaCompoPage: React.FC = () => {
 
   return (
     <div className="container">
+      <LoadingComponentVersion2 open={isLoading} />
       <FeaturedTitle title={"Dịch Vụ Spa - Grooming"} subtitle={"Các gói combo spa cho thú cưng"} />
 
       <Grid container spacing={3}>
@@ -44,7 +46,7 @@ const SpaCompoPage: React.FC = () => {
               <CardMedia
                 component="img"
                 height="200"
-                image={combo.image.length ? combo.image[0] : defaultImage}
+                image={combo.image.length ? combo?.image[0]?.imageURL : defaultImage}
                 alt={combo.name}
               />
               <CardContent>

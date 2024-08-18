@@ -11,13 +11,14 @@ import {
 } from "../../../types/Product/ProductType";
 import { PaginationType } from "../../../types/CommonType";
 import PetImageGallery from "../../../components/home/component/gallery/PetImageGallery";
+import LoadingComponentVersion2 from "../../../components/common/loading/Backdrop";
 
 const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [listProduct, setListProduct] = useState<ProductType[]>([]);
   const [filter, setFilter] = useState<FilterProductType>({
     page: 1,
-    size: 6,
+    size: 1000,
     Status: "Available",
   });
   const [pagination, setPagination] = useState<PaginationType>({
@@ -52,7 +53,9 @@ const Home: React.FC = () => {
 
   const defaultPetData = {
     image: [
-      "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
+      {
+        imageURL: "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+      }
     ],
     duration: "30 phút",
     rate: "4.5",
@@ -61,6 +64,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="container">
+      <LoadingComponentVersion2 open={isLoading} />
       <FeaturedTitle
         title={"BOSS DỊCH VỤ"}
         subtitle={"Các loại dịch vụ chăm sóc cho thú cưng của bạn"}
@@ -71,7 +75,7 @@ const Home: React.FC = () => {
         <h2 className="title">Dịch vụ cho cún</h2>
         <Grid container spacing={3}>
           {listProduct
-            .filter((product) => product.category.name === "Cún")
+            .filter((product) => product.category.name === "Chó")
             .map((product) => (
               <PetCard
                 key={product.id}
@@ -82,7 +86,7 @@ const Home: React.FC = () => {
                   sellingPrice: product.sellingPrice,
                   status: product.status,
                   category: product.category,
-                  image: defaultPetData.image,
+                  image: product?.image?.[0]?.imageURL ? product.image[0].imageURL : defaultPetData.image[0].imageURL,
                 }}
               />
             ))}
@@ -105,7 +109,7 @@ const Home: React.FC = () => {
                   sellingPrice: product.sellingPrice,
                   status: product.status,
                   category: product.category,
-                  image: defaultPetData.image,
+                  image: product?.image?.[0]?.imageURL ? product.image[0].imageURL : defaultPetData.image[0].imageURL,
                 }}
               />
             ))}
@@ -128,7 +132,7 @@ const Home: React.FC = () => {
                   sellingPrice: product.sellingPrice,
                   status: product.status,
                   category: product.category,
-                  image: defaultPetData.image,
+                  image: product?.image?.[0]?.imageURL ? product.image[0].imageURL : defaultPetData.image[0].imageURL,
                 }}
               />
             ))}
@@ -151,7 +155,7 @@ const Home: React.FC = () => {
                   sellingPrice: product.sellingPrice,
                   status: product.status,
                   category: product.category,
-                  image: defaultPetData.image,
+                  image: product?.image?.[0]?.imageURL ? product.image[0].imageURL : defaultPetData.image[0].imageURL,
                 }}
               />
             ))}

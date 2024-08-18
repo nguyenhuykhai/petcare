@@ -12,7 +12,7 @@ const MainContent: React.FC<MainContentProps> = ({ product }) => {
     <div className="main-content">
       <div className="product-detail">
         <img
-          src="https://th.bing.com/th/id/OIP.niBP202iUFEcJTpPtagp2QHaF2?rs=1&pid=ImgDetMain"
+          src={product?.image[0]?.imageURL}
           alt="Cắt tỉa lông cho cún"
         />
         <div className="product-info">
@@ -22,7 +22,7 @@ const MainContent: React.FC<MainContentProps> = ({ product }) => {
           </p>
           <p>
             <b>Tình trạng:</b>{" "}
-            {product.status === "Available" ? "Còn chỗ" : "Hết chỗ"}
+            {product.status === "AVAILABLE" ? "Còn chỗ" : "Hết chỗ"}
           </p>
           <p>
             <b>Lượt đánh giá:</b> 1880

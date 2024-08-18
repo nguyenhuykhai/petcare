@@ -42,6 +42,9 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     currentUser.setUser(null);
     localStorage.removeItem("userData");
+    localStorage.removeItem("UserInfo");
+    localStorage.removeItem("petId");
+    localStorage.removeItem("selectedPet");
     navigate("/");
   };
 

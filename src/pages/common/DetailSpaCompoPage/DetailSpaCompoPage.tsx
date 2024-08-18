@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import ProductAPI from "../../../utils/ProductAPI";
 import { ComboType } from "../../../types/Combo/ComboType";
+import LoadingComponentVersion2 from "../../../components/common/loading/Backdrop";
 
 const DetailSpaCompoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,7 +33,10 @@ const DetailSpaCompoPage: React.FC = () => {
     },
     supProducts: [],
     image: [
-      "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
+      {
+        imageURL:
+          "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
+      },
     ],
   };
 
@@ -54,8 +58,8 @@ const DetailSpaCompoPage: React.FC = () => {
             },
             image:
               comboData.image.length > 0
-                ? comboData.image
-                : defaultProductData.image,
+                ? comboData?.image[0]?.imageURL
+                : defaultProductData.image[0].imageURL,
           };
 
           setCombo(comboWithDefaults);
@@ -72,16 +76,7 @@ const DetailSpaCompoPage: React.FC = () => {
   }, [id]);
 
   if (isLoading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <LoadingComponentVersion2 open={isLoading} />;
   }
 
   if (!combo) {
