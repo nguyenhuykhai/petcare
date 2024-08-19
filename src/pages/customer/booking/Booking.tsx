@@ -11,8 +11,8 @@ import { StaffMember } from "../../../types/User/Staff";
 import { useNavigate } from "react-router-dom";
 import BookingAPI from "../../../utils/BookingAPI";
 
-// Create a date that is 1 day after the current date
-const minDate = addDays(new Date(), 1);
+// Dates start from today onwards
+const minDate = addDays(new Date(), -1);
 
 // Yup validation schemas
 const petValidationSchema = Yup.object({
@@ -31,7 +31,7 @@ const bookingValidationSchema = Yup.object({
     .required("Chọn ngày không được để trống!")
     .min(
       minDate,
-      "Ngày đặt lịch cần cách ngày hiện tại ít nhất 24h để chúng tôi chuẩn bị dịch vụ một cách tốt nhất ạ!"
+      "Ngày đặt lịch không hợp lệ!"
     ),
   time: Yup.string().required("Chọn giờ không được để trống!"),
   staffId: Yup.string().required("Chọn nhân viên không được để trống!"),
@@ -181,6 +181,7 @@ const Booking: React.FC = () => {
       formik.setFieldValue("petWeight", selectedPet.weight);
       formik.setFieldValue("petAge", selectedPet.age);
       formik.setFieldValue("petTypeId", selectedPet.typePet.id);
+      formik.setFieldValue("selectedPetId", selectedPetId);
     }
 
     formik.handleChange(event);
@@ -189,6 +190,10 @@ const Booking: React.FC = () => {
   const handleNavigateHome = () => {
     navigate("/");
   };
+
+  const handleNavigateProfile = () => {
+    navigate("/profile");
+  }
 
   return (
     <>
@@ -236,6 +241,7 @@ const Booking: React.FC = () => {
                   type="radio"
                   name="petTypeId"
                   value={petType.id}
+                  checked={formik.values.petTypeId === petType.id}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   required
@@ -346,7 +352,6 @@ const Booking: React.FC = () => {
             value={formik.values.note}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            required
           />
           {formik.touched.note && formik.errors.note && (
             <div className="error">{formik.errors.note}</div>
@@ -358,7 +363,6 @@ const Booking: React.FC = () => {
             value={formik.values.description}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            required
           />
           {formik.touched.description && formik.errors.description && (
             <div className="error">{formik.errors.description}</div>
@@ -390,8 +394,8 @@ const Booking: React.FC = () => {
               >
                 Trở về trang chủ
               </button>
-              <button type="button" className="navigate-button">
-                Xem dịch vụ của tôi
+              <button type="button" className="navigate-button" onClick={handleNavigateProfile}>
+                Xem đơn hàng của tôi
               </button>
             </div>
           )}

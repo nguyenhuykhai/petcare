@@ -76,7 +76,7 @@ const DetailPage: React.FC = () => {
           <>
             <MainContent product={product} />
             <Information product={product} />
-            <Recommendation />
+            {/* <Recommendation /> */}
           </>
         )}
       </div>

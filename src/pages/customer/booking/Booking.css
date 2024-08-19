@@ -12,9 +12,12 @@
 }
 
 .booking-form h2,
-.booking-form h3 {
+.booking-form h3,
+.booking-form h4 {
     text-align: center;
     margin-bottom: 20px;
+    color: #e89305; /* Primary color */
+    font-family: 'iciel-soup-of-justice', sans-serif;
 }
 
 .booking-form label {

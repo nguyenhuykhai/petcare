@@ -1,12 +1,23 @@
 import React from "react";
 import "./MainContent.css";
 import { ProductType } from "../../../../types/Product/ProductType";
+import { useNavigate, Link } from "react-router-dom";
 
 interface MainContentProps {
   product: ProductType | null;
 }
 
 const MainContent: React.FC<MainContentProps> = ({ product }) => {
+  const navigate = useNavigate();
+
+  const handleBookingClick = () => {
+    // Store the pet information in localStorage
+    localStorage.setItem("selectedPet", JSON.stringify(product));
+
+    // Navigate to the booking page
+    navigate("/booking");
+  };
+
   if (!product) return null;
   return (
     <div className="main-content">
@@ -31,11 +42,8 @@ const MainContent: React.FC<MainContentProps> = ({ product }) => {
             <b>Giá bán:</b>{" "}
             <span className="price">{product.sellingPrice} VNĐ</span>
           </p>
-          <button className="btn btn-add-cart">
-            <span>Thêm vào giỏ hàng</span>
-          </button>
-          <button className="btn btn-buy-now">
-            <span>Mua ngay</span>
+          <button onClick={handleBookingClick} className="btn btn-buy-now">
+            <span>Đặt lịch</span>
           </button>
         </div>
       </div>
