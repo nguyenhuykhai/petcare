@@ -23,7 +23,7 @@ const petValidationSchema = Yup.object({
   petAge: Yup.number()
     .required("Tuổi của boss không được để trống!")
     .min(0, "Tuổi phải là số dương!"),
-  petTypeId: Yup.string().required("Loài của boss không được để trống!"),
+    petTypeId: Yup.string().required("Vui lòng chọn loại boss!"),
 });
 
 const bookingValidationSchema = Yup.object({
@@ -35,9 +35,6 @@ const bookingValidationSchema = Yup.object({
     ),
   time: Yup.string().required("Chọn giờ không được để trống!"),
   staffId: Yup.string().required("Chọn nhân viên không được để trống!"),
-  quantity: Yup.number()
-    .required("Số lượng không được để trống!")
-    .min(1, "Số lượng phải là số dương!"),
   note: Yup.string().required("Ghi chú không được để trống!"),
   description: Yup.string().required("Mô tả không được để trống!"),
 });
@@ -126,17 +123,24 @@ const Booking: React.FC = () => {
 
   const handlePetSubmit = async (values: any) => {
     try {
+      console.log("values", values);
       // If the pet is already in the list, show the service form
       const existingPet = petList.find((pet) => pet.name === values.petName);
       if (existingPet) {
         localStorage.setItem("petId", existingPet.id);
         setShowServiceForm(true);
-        return;
+      } else {
+        const petId: any = await BookingAPI.createPet({
+          name: values.petName,
+          weight: values.petWeight,
+          age: values.petAge,
+          image:
+            "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
+          typePetId: values.petTypeId,
+        });
+        localStorage.setItem("petId", petId);
+        setShowServiceForm(true);
       }
-
-      const petId: any = await BookingAPI.createPet(values);
-      localStorage.setItem("petId", petId);
-      setShowServiceForm(true);
     } catch (error) {
       console.error("Error creating pet:", error);
       toast.error("Tên boss đã tồn tại, vui lòng chọn tên khác!");
@@ -225,6 +229,26 @@ const Booking: React.FC = () => {
             <div className="error">{formik.errors.petName}</div>
           )}
 
+          <label htmlFor="petTypeId">Boss là:</label>
+          <div>
+            {petTypes.map((petType) => (
+              <label key={petType.id}>
+                <input
+                  type="radio"
+                  name="petTypeId"
+                  value={petType.id}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  required
+                />
+                {petType.name}
+              </label>
+            ))}
+          </div>
+          {formik.touched.petTypeId && formik.errors.petTypeId && (
+            <div className="error">{formik.errors.petTypeId}</div>
+          )}
+
           <label>Số kg của boss:</label>
           <input
             type="number"
@@ -263,19 +287,6 @@ const Booking: React.FC = () => {
 
           <label htmlFor="serviceCategory">Tên dịch vụ:</label>
           <p>{selectedPet.name}</p>
-
-          <label htmlFor="quantity">Số lượng:</label>
-          <input
-            type="number"
-            name="quantity"
-            value={formik.values.quantity}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            required
-          />
-          {formik.touched.quantity && formik.errors.quantity && (
-            <div className="error">{formik.errors.quantity}</div>
-          )}
 
           <label htmlFor="price">
             Giá dịch vụ (cọc trước):{" "}
@@ -330,15 +341,6 @@ const Booking: React.FC = () => {
             <div className="error">{formik.errors.staffId}</div>
           )}
 
-          <div className="delivery-option">
-            <input
-              type="checkbox"
-              name="delivery"
-              checked={formik.values.delivery}
-              onChange={formik.handleChange}
-            />
-          </div>
-
           <label htmlFor="note">Ghi chú:</label>
           <textarea
             name="note"
@@ -363,10 +365,18 @@ const Booking: React.FC = () => {
             <div className="error">{formik.errors.description}</div>
           )}
 
-          <span className="delivery-option-additional">
-            Trạm qua tận nhà đưa đón bé (Freeship dưới 3km, trên 3km tính phí
-            ship theo giá Grab hiện tại)
-          </span>
+          <div className="delivery-option">
+            <input
+              type="checkbox"
+              name="delivery"
+              checked={formik.values.delivery}
+              onChange={formik.handleChange}
+            />
+            <span className="delivery-option-additional">
+              Trạm qua tận nhà đưa đón bé (Freeship dưới 3km, trên 3km tính phí
+              ship theo giá Grab hiện tại)
+            </span>
+          </div>
 
           <button type="submit" className="booking-submit-button">
             Đặt lịch ngay
