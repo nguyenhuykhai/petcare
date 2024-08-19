@@ -1,6 +1,7 @@
 import axiosClient from "./axiosClient";
 import { PetType } from "../types/PetType/PetType";
 import { StaffMember } from "../types/User/Staff";
+import { OrderType } from "../types/OrderType";
 
 const BookingAPI = {
   // Fetch pet types
@@ -23,6 +24,11 @@ const BookingAPI = {
         indexes: null, // by default: false
       },
     });
+  },
+
+  getBookingsByCustomerId: (customerId: string) => {
+    const url = `/orders?AccountId=${customerId}`;
+    return axiosClient.get<any, OrderType>(url);
   },
 
   // Create a new pet

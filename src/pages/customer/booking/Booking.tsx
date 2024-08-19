@@ -23,7 +23,7 @@ const petValidationSchema = Yup.object({
   petAge: Yup.number()
     .required("Tuổi của boss không được để trống!")
     .min(0, "Tuổi phải là số dương!"),
-    petTypeId: Yup.string().required("Vui lòng chọn loại boss!"),
+  petTypeId: Yup.string().required("Vui lòng chọn loại boss!"),
 });
 
 const bookingValidationSchema = Yup.object({
@@ -35,8 +35,6 @@ const bookingValidationSchema = Yup.object({
     ),
   time: Yup.string().required("Chọn giờ không được để trống!"),
   staffId: Yup.string().required("Chọn nhân viên không được để trống!"),
-  note: Yup.string().required("Ghi chú không được để trống!"),
-  description: Yup.string().required("Mô tả không được để trống!"),
 });
 
 const Booking: React.FC = () => {
@@ -45,6 +43,7 @@ const Booking: React.FC = () => {
   const navigate = useNavigate();
 
   const [showServiceForm, setShowServiceForm] = useState<boolean>(false);
+  const [isBookingSuccess, setIsBookingSuccess] = useState<boolean>(false);
   const [petList, setPetList] = useState<Pet[]>([]);
   const [petTypes, setPetTypes] = useState<PetType[]>([]);
   const [staffList, setStaffList] = useState<StaffMember[]>([]);
@@ -123,7 +122,6 @@ const Booking: React.FC = () => {
 
   const handlePetSubmit = async (values: any) => {
     try {
-      console.log("values", values);
       // If the pet is already in the list, show the service form
       const existingPet = petList.find((pet) => pet.name === values.petName);
       if (existingPet) {
@@ -166,6 +164,7 @@ const Booking: React.FC = () => {
         staffId: values.staffId,
       });
       toast.success("Đặt lịch thành công!");
+      setIsBookingSuccess(true);
     } catch (error) {
       console.error("Error creating booking:", error);
       toast.error("Lỗi khi đặt lịch!");
@@ -382,18 +381,20 @@ const Booking: React.FC = () => {
             Đặt lịch ngay
           </button>
 
-          <div className="action-buttons">
-            <button
-              type="button"
-              className="navigate-button"
-              onClick={handleNavigateHome}
-            >
-              Trở về trang chủ
-            </button>
-            <button type="button" className="navigate-button">
-              Xem dịch vụ của tôi
-            </button>
-          </div>
+          {isBookingSuccess && (
+            <div className="action-buttons">
+              <button
+                type="button"
+                className="navigate-button"
+                onClick={handleNavigateHome}
+              >
+                Trở về trang chủ
+              </button>
+              <button type="button" className="navigate-button">
+                Xem dịch vụ của tôi
+              </button>
+            </div>
+          )}
         </form>
       )}
     </>
