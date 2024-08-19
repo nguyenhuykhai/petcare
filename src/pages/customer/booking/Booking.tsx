@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./Booking.css";
 import FeaturedTitle from "../../../components/common/highlight/FeaturedTitle";
-import axios from "axios";
+import PetAPI from "../../../utils/PetAPI";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import { addDays } from "date-fns";
+import { Pet, PetType } from "../../../types/PetType/PetType";
+import { StaffMember } from "../../../types/User/Staff";
+import { useNavigate } from "react-router-dom";
+import BookingAPI from "../../../utils/BookingAPI";
 
 // Create a date that is 1 day after the current date
 const minDate = addDays(new Date(), 1);
@@ -25,7 +29,10 @@ const petValidationSchema = Yup.object({
 const bookingValidationSchema = Yup.object({
   date: Yup.date()
     .required("Chọn ngày không được để trống!")
-    .min(minDate, "Ngày đặt lịch cần cách ngày hiện tại ít nhất 24h để chúng tôi chuẩn bị dịch vụ một cách tốt nhất ạ!"),
+    .min(
+      minDate,
+      "Ngày đặt lịch cần cách ngày hiện tại ít nhất 24h để chúng tôi chuẩn bị dịch vụ một cách tốt nhất ạ!"
+    ),
   time: Yup.string().required("Chọn giờ không được để trống!"),
   staffId: Yup.string().required("Chọn nhân viên không được để trống!"),
   quantity: Yup.number()
@@ -35,22 +42,13 @@ const bookingValidationSchema = Yup.object({
   description: Yup.string().required("Mô tả không được để trống!"),
 });
 
-interface PetType {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface StaffMember {
-  id: string;
-  fullName: string;
-  status: string;
-}
-
 const Booking: React.FC = () => {
   const selectedPet = JSON.parse(localStorage.getItem("selectedPet") || "{}");
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const navigate = useNavigate();
 
   const [showServiceForm, setShowServiceForm] = useState<boolean>(false);
+  const [petList, setPetList] = useState<Pet[]>([]);
   const [petTypes, setPetTypes] = useState<PetType[]>([]);
   const [staffList, setStaffList] = useState<StaffMember[]>([]);
 
@@ -61,6 +59,7 @@ const Booking: React.FC = () => {
       petWeight: "",
       petAge: "",
       petTypeId: "",
+      selectedPetId: "",
       serviceCategory: selectedPet.name || "",
       date: "",
       time: "",
@@ -73,81 +72,70 @@ const Booking: React.FC = () => {
     validationSchema: showServiceForm
       ? bookingValidationSchema
       : petValidationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       if (!showServiceForm) {
         await handlePetSubmit(values);
       } else {
         await handleBookingSubmit(values);
+        resetForm();
+        localStorage.removeItem("petId");
+        localStorage.removeItem("selectedPet");
       }
     },
   });
 
-  // Fetch pet types from the API
   useEffect(() => {
+    // Fetch pet types from the API
     const fetchPetTypes = async () => {
       try {
-        const response = await axios.get(
-          "http://spapet.vinhuser.one:1234/api/v1/typePet?Status=ACTIVE"
-        );
-        setPetTypes(response.data.items);
+        const response = await BookingAPI.getPetTypes();
+        setPetTypes(response.items);
       } catch (error) {
         console.error("Error fetching pet types:", error);
       }
     };
-    fetchPetTypes();
-  }, []);
 
-  // Fetch staff list from the API
-  useEffect(() => {
+    // Fetch staff list from the API
     const fetchStaffList = async () => {
       try {
-        const response = await axios.get(
-          "http://spapet.vinhuser.one:1234/api/v1/accounts?Role=STAFF"
-        );
+        const response = await BookingAPI.getStaffList();
         setStaffList(
-          response.data.items.filter(
-            (staff: any) => staff.status === "ACTIVE"
-          )
+          response.items.filter((staff: any) => staff.status === "ACTIVE")
         );
       } catch (error) {
         console.error("Error fetching staff list:", error);
       }
     };
+
     fetchStaffList();
+    fetchPetTypes();
   }, []);
 
+  // Fetch pet list from the API
+  useEffect(() => {
+    const fetchPetList = async () => {
+      try {
+        const response = await PetAPI.getPetsByCustomerId(userData.id);
+        setPetList(response.items);
+      } catch (error) {
+        console.error("Error fetching pet list:", error);
+      }
+    };
+    fetchPetList();
+  }, [userData.id]);
+
   const handlePetSubmit = async (values: any) => {
-    // Retrieve userData from localStorage and extract the accessToken
-    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-    const accessToken = userData.accessToken;
-
-    if (!accessToken) {
-      toast.error("Người dùng chưa đăng nhập!");
-      return;
-    }
-
     try {
-      // Create a new pet using the API with Authorization header
-      const petResponse = await axios.post(
-        "http://spapet.vinhuser.one:1234/api/v1/pet",
-        {
-          name: values.petName,
-          weight: values.petWeight,
-          age: values.petAge,
-          image:
-            "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
-          typePetId: values.petTypeId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+      // If the pet is already in the list, show the service form
+      const existingPet = petList.find((pet) => pet.name === values.petName);
+      if (existingPet) {
+        localStorage.setItem("petId", existingPet.id);
+        setShowServiceForm(true);
+        return;
+      }
 
-      localStorage.setItem("petId", petResponse.data);
-
-      // After successful pet creation, show the service form
+      const petId: any = await BookingAPI.createPet(values);
+      localStorage.setItem("petId", petId);
       setShowServiceForm(true);
     } catch (error) {
       console.error("Error creating pet:", error);
@@ -158,9 +146,7 @@ const Booking: React.FC = () => {
   const handleBookingSubmit = async (values: any) => {
     try {
       const petId = localStorage.getItem("petId");
-
-      // Create a new booking using the API
-      await axios.post("http://spapet.vinhuser.one:1234/api/v1/orders", {
+      await BookingAPI.createBooking({
         productList: [
           {
             productId: selectedPet.id,
@@ -175,12 +161,30 @@ const Booking: React.FC = () => {
         petId: petId,
         staffId: values.staffId,
       });
-
       toast.success("Đặt lịch thành công!");
     } catch (error) {
       console.error("Error creating booking:", error);
       toast.error("Lỗi khi đặt lịch!");
     }
+  };
+
+  // Handle Pet selection change
+  const handlePetChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedPetId = event.target.value;
+    const selectedPet = petList.find((pet) => pet.id === selectedPetId);
+
+    if (selectedPet) {
+      formik.setFieldValue("petName", selectedPet.name);
+      formik.setFieldValue("petWeight", selectedPet.weight);
+      formik.setFieldValue("petAge", selectedPet.age);
+      formik.setFieldValue("petTypeId", selectedPet.typePet.id);
+    }
+
+    formik.handleChange(event);
+  };
+
+  const handleNavigateHome = () => {
+    navigate("/");
   };
 
   return (
@@ -189,6 +193,24 @@ const Booking: React.FC = () => {
       {!showServiceForm ? (
         <form className="booking-form" onSubmit={formik.handleSubmit}>
           <h2>THÔNG TIN CỦA BOSS</h2>
+
+          <label htmlFor="selectedPetId">Chọn Boss đã đăng ký:</label>
+          <select
+            name="selectedPetId"
+            value={formik.values.selectedPetId}
+            onChange={handlePetChange}
+            onBlur={formik.handleBlur}
+          >
+            <option value="">Chọn Boss</option>
+            {petList.map((pet) => (
+              <option key={pet.id} value={pet.id}>
+                {pet.name} - {pet.typePet.name}
+              </option>
+            ))}
+          </select>
+          {formik.touched.selectedPetId && formik.errors.selectedPetId && (
+            <div className="error">{formik.errors.selectedPetId}</div>
+          )}
 
           <label htmlFor="petName">Họ và tên Boss:</label>
           <input
@@ -201,26 +223,6 @@ const Booking: React.FC = () => {
           />
           {formik.touched.petName && formik.errors.petName && (
             <div className="error">{formik.errors.petName}</div>
-          )}
-
-          <label htmlFor="petTypeId">Boss là:</label>
-          <div>
-            {petTypes.map((petType) => (
-              <label key={petType.id}>
-                <input
-                  type="radio"
-                  name="petTypeId"
-                  value={petType.id}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  required
-                />
-                {petType.name}
-              </label>
-            ))}
-          </div>
-          {formik.touched.petTypeId && formik.errors.petTypeId && (
-            <div className="error">{formik.errors.petTypeId}</div>
           )}
 
           <label>Số kg của boss:</label>
@@ -277,7 +279,7 @@ const Booking: React.FC = () => {
 
           <label htmlFor="price">
             Giá dịch vụ (cọc trước):{" "}
-            <span className="price-addtional">
+            <span className="price-additional">
               *Số tiền còn lại sẽ thanh toán khi Boss được chăm sóc xong nhé!
             </span>
           </label>
@@ -335,10 +337,6 @@ const Booking: React.FC = () => {
               checked={formik.values.delivery}
               onChange={formik.handleChange}
             />
-            <span className="delivery-option-additional">
-              Trạm qua tận nhà đưa đón bé (Freeship dưới 3km, trên 3km tính phí
-              ship theo giá Grab hiện tại)
-            </span>
           </div>
 
           <label htmlFor="note">Ghi chú:</label>
@@ -365,9 +363,27 @@ const Booking: React.FC = () => {
             <div className="error">{formik.errors.description}</div>
           )}
 
+          <span className="delivery-option-additional">
+            Trạm qua tận nhà đưa đón bé (Freeship dưới 3km, trên 3km tính phí
+            ship theo giá Grab hiện tại)
+          </span>
+
           <button type="submit" className="booking-submit-button">
             Đặt lịch ngay
           </button>
+
+          <div className="action-buttons">
+            <button
+              type="button"
+              className="navigate-button"
+              onClick={handleNavigateHome}
+            >
+              Trở về trang chủ
+            </button>
+            <button type="button" className="navigate-button">
+              Xem dịch vụ của tôi
+            </button>
+          </div>
         </form>
       )}
     </>
